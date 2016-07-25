@@ -1,0 +1,26 @@
+{
+  "name": "hit238-a1-webapp",
+  "authors": [
+    "Samuel Walladge <samuel@swalladge.id.au>"
+  ],
+  "description": "webapp",
+  "main": "index.html",
+  "keywords": [
+    "webapp",
+    "quiz"
+  ],
+  "license": "CLOSED",
+  "homepage": "https://quiz.swalladge.id.au",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "normalize-css": "^4.2.0",
+    "font-awesome": "^4.6.3"
+  }
+}
