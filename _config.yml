@@ -19,4 +19,5 @@ exclude:
   - 'package.json'
   - 'CNAME'
   - 'tags'
+  - 'build_and_deploy.sh'
 
