@@ -5,6 +5,7 @@ register_endpoint = 'https://quiz.swalladge.id.au/api/register/';
 quiz_endpoint = 'https://quiz.swalladge.id.au/api/quiz/';
 email = null;
 token = null;
+Data = {};
 
 function getUserData(success_callback, fail_callback) {
 
@@ -19,14 +20,20 @@ function getUserData(success_callback, fail_callback) {
 }
 
 function saveUserData(data) {
+  Data.user = data;
   console.log(data);
 }
 
 function failedLogin(text) {
-  console.log('login failed: ' + text);
+  $('#form-feedback').text('Login failed: ' + text);
 }
 
-function login(tempemail, password, success_callback, fail_callback) {
+function logout() {
+  localStorage.clear();
+  location.href = '#welcome-page';
+}
+
+function login(tempemail, password) {
 
   var data = {};
   data.password = password;
@@ -39,11 +46,14 @@ function login(tempemail, password, success_callback, fail_callback) {
         data: JSON.stringify(data),
         success: function(res, textstatus) {
           if (res.success) {
-            location.hash = 'home-page';
-            console.log(res);
+            // redirect to main page
+            location.href = '#home-page';
+            $('#form-feedback').text('');
+            // save the credentials to localstorage for later
             localStorage.token = token = res.data;
             localStorage.email = email = tempemail;
           } else {
+            // failed :(
             failedLogin(res.statusText);
           }
         },
@@ -56,30 +66,34 @@ function login(tempemail, password, success_callback, fail_callback) {
 // run on page load
 $(document).ready( function() {
 
-  // TODO: for debugging - remove later
-  location.hash = '';
-
+  // get the email and token from localstorage if available
   email = localStorage.email;
   token = localStorage.token;
+  Data = localStorage.Data;
+  if (!Data) {
+    Data = {};
+  }
 
   if (!(email && token)) {
-    location.hash = 'welcome-page';
+    // go to the login/register page if no token or username
+    location.href = '#welcome-page';
   } else {
+    // otherwise, check if the credentials are ok
     getUserData(function(res, textstatus) {
+      // if logged in ok, go to the homepage
       if (res.success) {
         saveUserData(res.data);
-        location.hash = 'home-page';
       } else {
-        location.hash = 'welcome-page';
+        location.href = '#welcome-page';
       }
     },
+    // otherwise redirect to the welcome page
     function(res, textstatus) {
-      console.log('failed to get data');
-      console.log(textstatus);
-      location.hash = 'welcome-page';
+      location.href = '#welcome-page';
     });
   }
 
+  // hijack the login form
   $('#login-form').on('submit', function(e) {
     e.preventDefault();
     var username = $('#email-input').val();
@@ -87,5 +101,8 @@ $(document).ready( function() {
     login(username, password);
   });
 
+  $('.logout').on('click', function(e) {
+    logout();
+  });
 
 });
