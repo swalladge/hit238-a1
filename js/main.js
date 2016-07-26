@@ -19,9 +19,36 @@ function getUserData(success_callback, fail_callback) {
   });
 }
 
+function updateIndex() {
+  $.ajax(quiz_endpoint, {
+        jsonp: false,
+        dataType: 'json',
+        method: 'GET',
+        data: {'email': email, 'token': token},
+        success: function(res, textstatus) {
+          if (res.success) {
+            Data.quizzes = res.data;
+
+						var indexdata = '';
+            for (i = 0; i < Data.quizzes.length; ++i) {
+							var item = Data.quizzes[i];
+							indexdata += '<div>' + item.name + '</div>';
+						}
+            $('#quiz-index').html(indexdata);
+          } else {
+            console.log('failed updating quiz index: ' + textstatus);
+          }
+        },
+        error: function (res, textstatus) {
+            console.log('failed updating quiz index: ' + textstatus);
+        }
+  });
+}
+
 function saveUserData(data) {
   Data.user = data;
   console.log(data);
+  $('.username').text(Data.user.username);
 }
 
 function failedLogin(text) {
@@ -31,6 +58,7 @@ function failedLogin(text) {
 function logout() {
   localStorage.clear();
   location.href = '#welcome-page';
+  $('#logout').text('Login');
 }
 
 function login(tempemail, password) {
@@ -52,6 +80,7 @@ function login(tempemail, password) {
             // save the credentials to localstorage for later
             localStorage.token = token = res.data;
             localStorage.email = email = tempemail;
+            onLogin();
           } else {
             // failed :(
             failedLogin(res.statusText);
@@ -61,6 +90,14 @@ function login(tempemail, password) {
           failedLogin(res.statusText);
         }
   });
+}
+
+function onLogin() {
+  $('#logout-btn').on('click', function(e) {
+    e.preventDefault();
+    logout();
+  });
+  $('#logout-btn').text('Logout');
 }
 
 // run on page load
@@ -83,6 +120,8 @@ $(document).ready( function() {
       // if logged in ok, go to the homepage
       if (res.success) {
         saveUserData(res.data);
+        onLogin();
+        location.href = '#home-page';
       } else {
         location.href = '#welcome-page';
       }
@@ -101,8 +140,5 @@ $(document).ready( function() {
     login(username, password);
   });
 
-  $('.logout').on('click', function(e) {
-    logout();
-  });
-
+  $('#quizzes-page').on('pagebeforeshow', updateIndex());
 });
