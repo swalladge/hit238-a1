@@ -2,8 +2,39 @@
   <ul>
   <% _.each( rc.quizzes, function( quiz ){ %>
     <li>
-    <a href="#" onclick="showQuiz(<%= quiz.id %>);"><%- quiz.name %></a>
+    <a href="#" onclick="showQuiz(<%- quiz.id %>);"><%- quiz.name %></a>
     </li>
     <% }); %>
   </ul>
+</script>
+
+<script id="quiz_info_template" type="text/template" class="template">
+  <h2><%- rc.name %></h2>
+
+  <p><%- rc.description %></p>
+
+  <p>Number of questions: <%- rc.questions.length %></p>
+
+  <a href="#" onclick="takeQuiz(<%- rc.id %>);">Take the Quiz!</a>
+</script>
+
+<script id="question_template" type="text/template" class="template">
+
+  <h2>Question <%- rc.current %> of <%- rc.max %></h2>
+
+  <p><%- rc.q.q %></p>
+
+  <form id="quiz-option-form" name="quiz-option-form">
+  <label><input type="radio" name="quiz-option" value="0" checked/> Don't know... </label>
+  <% var count=1; _.each( rc.q.options, function( option ){ %>
+    <label><input type="radio" name="quiz-option" value="<%- count %>" /> <%- option %> </label>
+  <% ++count; }); %>
+  </form>
+
+
+  <a href="#" onclick="submitQuestion(<%- rc.id %>);">Submit</a>
+</script>
+
+<script id="results_template" type="text/template" class="template">
+
 </script>

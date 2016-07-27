@@ -6,9 +6,16 @@ quiz_endpoint = 'https://quiz.swalladge.id.au/api/quiz/';
 email = null;
 token = null;
 global_data = {};
+global_data.fullquizzes = {};
+
+current_quiz = null;
+current_question = null;
+answers = null;
 
 _.templateSettings.variable = "rc";
 quiz_list_template = null;
+quiz_template = null;
+question_template = null;
 
 pages = {
   '#splash-page': onSplashPage,
@@ -18,7 +25,8 @@ pages = {
   '#home-page': onHomePage,
   '#profile-page': onProfilePage,
   '#quizzes-page': onQuizzesPage,
-  '#quiz-page': onQuizPage
+  '#quiz-page': onQuizPage,
+  '#question-page': onQuestionPage
 };
 
 function getUserData(success_callback, fail_callback) {
@@ -50,6 +58,28 @@ function updateIndex() {
         },
         error: function (res, textstatus) {
             console.log('failed updating quiz index: ' + textstatus);
+        }
+  });
+}
+
+function getFullQuiz(id) {
+  $.ajax(quiz_endpoint + id, {
+        jsonp: false,
+        dataType: 'json',
+        method: 'GET',
+        data: {'email': email, 'token': token},
+        success: function(res, textstatus) {
+          if (res.success) {
+            global_data.fullquizzes[id] = res.data;
+            global_data.fullquizzes[id].id = id;
+            $('#quiz-info').html((quiz_template(global_data.fullquizzes[id])));
+            location.href = '#quiz-page';
+          } else {
+            console.log('failed getting quiz: ' + textstatus);
+          }
+        },
+        error: function (res, textstatus) {
+            console.log('failed getting quiz: ' + textstatus);
         }
   });
 }
@@ -106,13 +136,38 @@ function login(tempemail, password) {
 }
 
 function showQuiz(id) {
-  // TODO
-  // change to the quiz page
-  // make sure we have the full quiz info (retreive if needed)
-  // render the quiz template with the quiz data
-  $('#quiz-info').text('viewing quiz: ' + id);
-  location.href = '#quiz-page';
+  console.log(global_data.fullquizzes[id]);
+  if (global_data.fullquizzes[id] !== undefined) {
+    $('#quiz-info').html((quiz_template(global_data.fullquizzes[id])));
+    location.href = '#quiz-page';
+  } else {
+    getFullQuiz(id);
+  }
 }
+
+function takeQuiz(id) {
+  current_quiz = id;
+  current_question = 0;
+  answers = [];
+  location.href = "#question-page";
+}
+
+function submitQuestion() {
+  var answer = $('#quiz-option-form [name=quiz-option]:checked').val();
+  answers[current_question] = answer;
+
+  console.log('answered ' + answer + ' to question ' + current_question);
+
+  var max = global_data.fullquizzes[current_quiz].questions.length - 1;
+  if (current_question < max) {
+    current_question++;
+    onQuestionPage();
+  } else {
+    // TODO: display summary and submit answers
+  }
+
+}
+
 
 function onLogin() {
   $('#logout-btn').on('click', function(e) {
@@ -154,12 +209,25 @@ function onProfilePage() {
 
 function onQuizzesPage() {
   console.log('onQuizzesPage');
-
-
 }
 
 function onQuizPage() {
   console.log('onQuizPage');
+
+}
+
+function onQuestionPage() {
+  console.log('onQuestionPage');
+  if (current_question == null || current_quiz == null) {
+    return;
+  }
+  var data = {
+    'q': global_data.fullquizzes[current_quiz].questions[current_question],
+    'max': global_data.fullquizzes[current_quiz].questions.length - 1,
+    'current': current_question + 1
+  }
+
+  $('#quiz-question').html(question_template(data));
 
 }
 
@@ -173,6 +241,8 @@ $(document).ready( function() {
   token = localStorage.token;
 
   quiz_list_template = _.template($('#quiz_list_template').html());
+  quiz_template = _.template($('#quiz_info_template').html());
+  question_template = _.template($('#question_template').html());
 
   // try to login
   if (!(email && token)) {
