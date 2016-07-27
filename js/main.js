@@ -12,10 +12,13 @@ current_quiz = null;
 current_question = null;
 answers = null;
 
+results_drawn = null;
+
 _.templateSettings.variable = "rc";
 quiz_list_template = null;
 quiz_template = null;
 question_template = null;
+results_template = null;
 
 pages = {
   '#splash-page': onSplashPage,
@@ -135,7 +138,68 @@ function login(tempemail, password) {
   });
 }
 
+// submits the answers to the quiz, server returns the correct answers for us to
+// show a results screen
+function submitAnswersToServer(quizid, the_answers) {
+  var params = {'email': email, 'token': token};
+  $.ajax(quiz_endpoint + quizid + '?' + $.param(params), {
+        jsonp: false,
+        dataType: 'json',
+        method: 'POST',
+        data: JSON.stringify({'complete':true, 'answers':the_answers }),
+        success: function(res, textstatus) {
+          if (res.success) {
+            drawResults(quizid, res.data);
+            location.href = '#quiz-page';
+            console.log(res.data);
+          } else {
+            // failed :(
+            console.log('failed to submit answers: ' + the_answers);
+          }
+        },
+        error: function(res, textstatus) {
+          console.log('failed to submit answers: ' + the_answers);
+        }
+  });
+}
+
+// saves the current answers to the server without submitting (allows for saving
+// progress in a quiz)
+function saveAnswersToServer(quizid, the_answers) {
+  var params = {'email': email, 'token': token};
+  $.ajax(quiz_endpoint + quizid + '?' + $.param(params), {
+        jsonp: false,
+        dataType: 'json',
+        method: 'POST',
+        data: JSON.stringify({'complete':false, 'answers':the_answers }),
+        success: function(res, textstatus) {
+          if (res.success) {
+            console.log('saved answers');
+          } else {
+            // failed :(
+            console.log('failed to save answers');
+          }
+        },
+        error: function(res, textstatus) {
+          console.log('failed to save answers');
+        }
+  });
+}
+
+function drawResults(quizid, results_data) {
+  console.log('drawing results for quiz ' + quizid);
+  results_drawn = quizid;
+  var quiz = global_data.fullquizzes[quizid];
+  var data = {
+    quiz: quiz,
+    results: results_data
+  };
+
+  $('#quiz-results').html(results_template(data));
+}
+
 function showQuiz(id) {
+  current_quiz = id;
   console.log(global_data.fullquizzes[id]);
   if (global_data.fullquizzes[id] !== undefined) {
     $('#quiz-info').html((quiz_template(global_data.fullquizzes[id])));
@@ -149,6 +213,9 @@ function takeQuiz(id) {
   current_quiz = id;
   current_question = 0;
   answers = [];
+  for (var i=0; i<global_data.fullquizzes[id].questions.length; i++) {
+    answers[i] = 0;
+  }
   location.href = "#question-page";
 }
 
@@ -160,10 +227,11 @@ function submitQuestion() {
 
   var max = global_data.fullquizzes[current_quiz].questions.length - 1;
   if (current_question < max) {
+    saveAnswersToServer(current_quiz, answers);
     current_question++;
     onQuestionPage();
   } else {
-    // TODO: display summary and submit answers
+    submitAnswersToServer(current_quiz, answers);
   }
 
 }
@@ -213,6 +281,10 @@ function onQuizzesPage() {
 
 function onQuizPage() {
   console.log('onQuizPage');
+  if (results_drawn != current_quiz) {
+    $('#quiz-results').html('');
+    results_drawn = null;
+  }
 
 }
 
@@ -223,8 +295,13 @@ function onQuestionPage() {
   }
   var data = {
     'q': global_data.fullquizzes[current_quiz].questions[current_question],
-    'max': global_data.fullquizzes[current_quiz].questions.length - 1,
-    'current': current_question + 1
+    'max': global_data.fullquizzes[current_quiz].questions.length,
+    'current': current_question + 1 // zero-indexed
+  }
+
+  var userquiz = _.find(global_data.user.quizzes, function(quiz){ return quiz.id == current_quiz; });
+  if (userquiz) {
+    data.saved_answers = userquiz.answers;
   }
 
   $('#quiz-question').html(question_template(data));
@@ -243,6 +320,7 @@ $(document).ready( function() {
   quiz_list_template = _.template($('#quiz_list_template').html());
   quiz_template = _.template($('#quiz_info_template').html());
   question_template = _.template($('#question_template').html());
+  results_template = _.template($('#results_template').html());
 
   // try to login
   if (!(email && token)) {
@@ -285,3 +363,6 @@ $(document).ready( function() {
 
 
 });
+
+// TODO: use global_data.user.quizzes[id] to pre-fill questions in template
+// (saving previously entered answers)
