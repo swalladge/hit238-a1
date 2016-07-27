@@ -39,7 +39,7 @@
 
   <% var total = rc.results.correct_answers.length; var correct = 0; %>
   <% for (var i=0; i<rc.results.correct_answers.length; ++i) { %>
-    <% var ans = ''; var ansIndex = rc.results.last_answers[i]-1; if (ansIndex == -1) { ans = 'Don\'t know...'; } else { ans = rc.quiz.questions[i].options[ansIndex]; } %>
+    <% var ans = ''; var ansIndex = rc.results.last_answers[i]-1; if (ansIndex == -1) { ans = "Don't know..."; } else { ans = rc.quiz.questions[i].options[ansIndex]; } %>
     <% var cor_ans = rc.quiz.questions[i].options[rc.results.correct_answers[i]-1]; var cor_ansIndex = rc.results.correct_answers[i]-1%>
     <div class="result">
     <h3>Q<%- i+1 %></h3>
@@ -50,5 +50,19 @@
     </div>
   <% } %>
   <p>Score: <%- correct %>/<%- total %></p>
+
+</script>
+
+<script id="user_template" type="text/template" class="template">
+
+  <h2>Hello <%- rc.user.username %>, this is your profile page.</h2>
+
+  <% if (rc.user.quizzes.length != 0) { %>
+    <% _.each(_.sortBy(rc.user.quizzes, function(q){return q.timestamp;}), function ( quiz ) { console.log(quiz); %>
+      <div class="quiz-entry">
+        <a href="#" onclick="showQuiz(<%- quiz.id %>);"><%- _.find(rc.quizzes, function(q){return q.id == quiz.id;}).name %></a> (<span>Best score: <%- quiz.best_score %></span> &bull; <span>Attempts: <%- quiz.attempts %></span>)
+      </div>
+  <% }); } %>
+
 
 </script>

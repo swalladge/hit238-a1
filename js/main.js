@@ -19,6 +19,7 @@ quiz_list_template = null;
 quiz_template = null;
 question_template = null;
 results_template = null;
+user_template = null;
 
 pages = {
   '#splash-page': onSplashPage,
@@ -39,12 +40,15 @@ function getUserData(success_callback, fail_callback) {
         dataType: 'json',
         method: 'GET',
         data: {'email': email, 'token': token},
-        success: success_callback,
+        success: function (res, textstatus) {
+          global_data.user = res.data;
+          success_callback(res, textstatus);
+        },
         error: fail_callback
   });
 }
 
-function updateIndex() {
+function updateIndex(callback) {
   $.ajax(quiz_endpoint, {
         jsonp: false,
         dataType: 'json',
@@ -54,7 +58,7 @@ function updateIndex() {
           if (res.success) {
             global_data.quizzes = res.data;
             redrawQuizzes();
-
+            if (callback) {callback();}
           } else {
             console.log('failed updating quiz index: ' + textstatus);
           }
@@ -89,6 +93,7 @@ function getFullQuiz(id) {
 
 function redrawUserInfo() {
   $('.username').text(global_data.user.username);
+  $('#user-info').html(user_template(global_data));
 }
 
 function redrawQuizzes() {
@@ -243,7 +248,7 @@ function onLogin() {
     logout();
   });
   $('#logout-btn').text('Logout');
-  updateIndex();
+  updateIndex(redrawUserInfo);
 }
 
 function onSplashPage() {
@@ -273,6 +278,7 @@ function onHomePage() {
 
 function onProfilePage() {
   console.log('onProfilePage');
+  getUserData(redrawUserInfo, undefined);
 }
 
 function onQuizzesPage() {
@@ -321,6 +327,7 @@ $(document).ready( function() {
   quiz_template = _.template($('#quiz_info_template').html());
   question_template = _.template($('#question_template').html());
   results_template = _.template($('#results_template').html());
+  user_template = _.template($('#user_template').html());
 
   // try to login
   if (!(email && token)) {
@@ -331,7 +338,6 @@ $(document).ready( function() {
     getUserData(function(res, textstatus) {
       // if logged in ok, go to the homepage
       if (res.success) {
-        global_data.user = res.data;
         onLogin();
         if (location.hash in pages) {
           pages[location.hash]();
