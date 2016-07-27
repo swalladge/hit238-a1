@@ -1,0 +1,9 @@
+<script id="quiz_list_template" type="text/template" class="template">
+  <ul>
+  <% _.each( rc.quizzes, function( quiz ){ %>
+    <li>
+    <a href="#" onclick="showQuiz(<%= quiz.id %>);"><%- quiz.name %></a>
+    </li>
+    <% }); %>
+  </ul>
+</script>
