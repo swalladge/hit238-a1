@@ -156,7 +156,6 @@ function submitAnswersToServer(quizid, the_answers) {
           if (res.success) {
             drawResults(quizid, res.data);
             location.href = '#quiz-page';
-            console.log(res.data);
           } else {
             // failed :(
             console.log('failed to submit answers: ' + the_answers);
@@ -179,6 +178,11 @@ function saveAnswersToServer(quizid, the_answers) {
         data: JSON.stringify({'complete':false, 'answers':the_answers }),
         success: function(res, textstatus) {
           if (res.success) {
+            _.each(global_data.user.quizzes, function(q) {
+              if (q.id == quizid) {
+                q.last_answers = the_answers;
+              }
+            });
             console.log('saved answers');
           } else {
             // failed :(
@@ -205,7 +209,6 @@ function drawResults(quizid, results_data) {
 
 function showQuiz(id) {
   current_quiz = id;
-  console.log(global_data.fullquizzes[id]);
   if (global_data.fullquizzes[id] !== undefined) {
     $('#quiz-info').html((quiz_template(global_data.fullquizzes[id])));
     location.href = '#quiz-page';
@@ -221,14 +224,19 @@ function takeQuiz(id) {
   for (var i=0; i<global_data.fullquizzes[id].questions.length; i++) {
     answers[i] = 0;
   }
+  // load saved answers if available
+  _.each(global_data.user.quizzes, function(q) {
+    if (q.id == current_quiz) {
+      answers = q.last_answers;
+    }
+  });
+
   location.href = "#question-page";
 }
 
 function submitQuestion() {
   var answer = $('#quiz-option-form [name=quiz-option]:checked').val();
   answers[current_question] = answer;
-
-  console.log('answered ' + answer + ' to question ' + current_question);
 
   var max = global_data.fullquizzes[current_quiz].questions.length - 1;
   if (current_question < max) {
@@ -307,7 +315,7 @@ function onQuestionPage() {
 
   var userquiz = _.find(global_data.user.quizzes, function(quiz){ return quiz.id == current_quiz; });
   if (userquiz) {
-    data.saved_answers = userquiz.answers;
+    data.saved_answers = userquiz.last_answers;
   }
 
   $('#quiz-question').html(question_template(data));

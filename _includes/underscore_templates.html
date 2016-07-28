@@ -25,9 +25,9 @@
   <p><%- rc.q.q %></p>
 
   <form id="quiz-option-form" name="quiz-option-form">
-  <label><input type="radio" name="quiz-option" value="0" checked/> Don't know... </label>
+  <label><input type="radio" name="quiz-option" value="0" <% if ((rc.saved_answers && rc.saved_answers[rc.current-1] == 0) || !rc.saved_answers) { %>checked<% } %> /> Don't know... </label>
   <% var count=1; _.each( rc.q.options, function( option ){ %>
-    <label><input type="radio" name="quiz-option" value="<%- count %>" /> <%- option %> </label>
+    <label><input type="radio" name="quiz-option" value="<%- count %>" <% if (rc.saved_answers && rc.saved_answers[rc.current-1] == count) { %>checked<% } %> /> <%- option %> </label>
   <% ++count; }); %>
   </form>
 
@@ -58,7 +58,7 @@
   <h2>Hello <%- rc.user.username %>, this is your profile page.</h2>
 
   <% if (rc.user.quizzes.length != 0) { %>
-    <% _.each(_.sortBy(rc.user.quizzes, function(q){return q.timestamp;}), function ( quiz ) { console.log(quiz); %>
+    <% _.each(_.sortBy(rc.user.quizzes, function(q){return q.timestamp;}), function ( quiz ) { %>
       <div class="quiz-entry">
         <a href="#" onclick="showQuiz(<%- quiz.id %>);"><%- _.find(rc.quizzes, function(q){return q.id == quiz.id;}).name %></a> (<span>Best score: <%- quiz.best_score %></span> &bull; <span>Attempts: <%- quiz.attempts %></span>)
       </div>
