@@ -1,18 +1,19 @@
 
+// global variables for config and state
 user_endpoint = 'https://quiz.swalladge.id.au/api/user/';
 login_endpoint = 'https://quiz.swalladge.id.au/api/login/';
 register_endpoint = 'https://quiz.swalladge.id.au/api/register/';
 quiz_endpoint = 'https://quiz.swalladge.id.au/api/quiz/';
+
 email = null;
 token = null;
+
 global_data = {};
 global_data.fullquizzes = {};
 
 current_quiz = null;
 current_question = null;
 answers = null;
-
-results_drawn = null;
 
 _.templateSettings.variable = "rc";
 quiz_list_template = null;
@@ -33,61 +34,31 @@ pages = {
   '#question-page': onQuestionPage
 };
 
-function getUserData(success_callback, fail_callback) {
-
-  $.ajax(user_endpoint, {
+// ajax calls for getting data
+function getUserData() {
+  return $.ajax(user_endpoint, {
         jsonp: false,
         dataType: 'json',
         method: 'GET',
         data: {'email': email, 'token': token},
-        success: function (res, textstatus) {
-          global_data.user = res.data;
-          success_callback(res, textstatus);
-        },
-        error: fail_callback
   });
 }
 
-function updateIndex(callback) {
-  $.ajax(quiz_endpoint, {
+function getQuizIndex() {
+  return $.ajax(quiz_endpoint, {
         jsonp: false,
         dataType: 'json',
         method: 'GET',
-        data: {'email': email, 'token': token},
-        success: function(res, textstatus) {
-          if (res.success) {
-            global_data.quizzes = res.data;
-            redrawQuizzes();
-            if (callback) {callback();}
-          } else {
-            console.log('failed updating quiz index: ' + textstatus);
-          }
-        },
-        error: function (res, textstatus) {
-            console.log('failed updating quiz index: ' + textstatus);
-        }
+        data: {'email': email, 'token': token}
   });
 }
 
 function getFullQuiz(id) {
-  $.ajax(quiz_endpoint + id, {
+  return $.ajax(quiz_endpoint + id, {
         jsonp: false,
         dataType: 'json',
         method: 'GET',
-        data: {'email': email, 'token': token},
-        success: function(res, textstatus) {
-          if (res.success) {
-            global_data.fullquizzes[id] = res.data;
-            global_data.fullquizzes[id].id = id;
-            $('#quiz-info').html((quiz_template(global_data.fullquizzes[id])));
-            location.href = '#quiz-page';
-          } else {
-            console.log('failed getting quiz: ' + textstatus);
-          }
-        },
-        error: function (res, textstatus) {
-            console.log('failed getting quiz: ' + textstatus);
-        }
+        data: {'email': email, 'token': token}
   });
 }
 
@@ -95,11 +66,6 @@ function redrawUserInfo() {
   $('.username').text(global_data.user.username);
   $('#user-info').html(user_template(global_data));
 }
-
-function redrawQuizzes() {
-  $('#quiz-index').html((quiz_list_template(global_data)));
-}
-
 
 function onFailedLogin(text) {
   $('#form-feedback').text('Login failed: ' + text);
@@ -153,16 +119,23 @@ function submitAnswersToServer(quizid, the_answers) {
         method: 'POST',
         data: JSON.stringify({'complete':true, 'answers':the_answers }),
         success: function(res, textstatus) {
-          if (res.success) {
-            drawResults(quizid, res.data);
-            location.href = '#quiz-page';
-          } else {
-            // failed :(
-            console.log('failed to submit answers: ' + the_answers);
-          }
+            var quiz = global_data.fullquizzes[quizid];
+            var data = {
+              quiz: quiz,
+              results: res.data
+            };
+
+            // show results
+            $('#quiz-results').html(results_template(data));
+						$.mobile.changePage('#results-dialog', {
+							transition: 'pop',
+							changeHash: false,
+							role: 'dialog'
+						});
         },
         error: function(res, textstatus) {
           console.log('failed to submit answers: ' + the_answers);
+          location.href = '#home-page';
         }
   });
 }
@@ -177,17 +150,12 @@ function saveAnswersToServer(quizid, the_answers) {
         method: 'POST',
         data: JSON.stringify({'complete':false, 'answers':the_answers }),
         success: function(res, textstatus) {
-          if (res.success) {
-            _.each(global_data.user.quizzes, function(q) {
-              if (q.id == quizid) {
-                q.last_answers = the_answers;
-              }
-            });
-            console.log('saved answers');
-          } else {
-            // failed :(
-            console.log('failed to save answers');
-          }
+          _.each(global_data.user.quizzes, function(q) {
+            if (q.id == quizid) {
+              q.last_answers = the_answers;
+            }
+          });
+          console.log('saved answers');
         },
         error: function(res, textstatus) {
           console.log('failed to save answers');
@@ -195,25 +163,17 @@ function saveAnswersToServer(quizid, the_answers) {
   });
 }
 
-function drawResults(quizid, results_data) {
-  console.log('drawing results for quiz ' + quizid);
-  results_drawn = quizid;
-  var quiz = global_data.fullquizzes[quizid];
-  var data = {
-    quiz: quiz,
-    results: results_data
-  };
-
-  $('#quiz-results').html(results_template(data));
-}
-
 function showQuiz(id) {
   current_quiz = id;
   if (global_data.fullquizzes[id] !== undefined) {
-    $('#quiz-info').html((quiz_template(global_data.fullquizzes[id])));
     location.href = '#quiz-page';
   } else {
-    getFullQuiz(id);
+    getFullQuiz(id).done(function(res, textstatus) {
+      global_data.fullquizzes[id] = res.data;
+      global_data.fullquizzes[id].id = id;
+      $('#quiz-info').html((quiz_template(global_data.fullquizzes[id])));
+      location.href = '#quiz-page';
+    });
   }
 }
 
@@ -249,19 +209,24 @@ function submitQuestion() {
 
 }
 
-
 function onLogin() {
+  // set up the logout button
   $('#logout-btn').on('click', function(e) {
     e.preventDefault();
     logout();
   });
   $('#logout-btn').text('Logout');
-  updateIndex(redrawUserInfo);
+
+  getQuizIndex().done(function(res, textstatus) {
+    global_data.quizzes = res.data;
+    getUserData().done(function(res, textstatus) {
+      global_data.user = res.data;
+    });
+  });
 }
 
 function onSplashPage() {
   console.log('splashpage');
-
 }
 
 function onWelcomePage() {
@@ -286,19 +251,27 @@ function onHomePage() {
 
 function onProfilePage() {
   console.log('onProfilePage');
-  getUserData(redrawUserInfo, undefined);
+  getUserData().done(function (res, textstatus) {
+    global_data.user = res.data;
+    redrawUserInfo();
+  });
 }
 
 function onQuizzesPage() {
   console.log('onQuizzesPage');
+  $('#quiz-index').html((quiz_list_template(global_data)));
 }
 
 function onQuizPage() {
   console.log('onQuizPage');
-  if (results_drawn != current_quiz) {
-    $('#quiz-results').html('');
-    results_drawn = null;
+  // back to the homepage if no quiz to display
+  if (current_quiz == null) {
+    location.href = "#home-page";
+    return;
   }
+
+  // draw the quiz
+  $('#quiz-info').html((quiz_template(global_data.fullquizzes[current_quiz])));
 
 }
 
@@ -331,6 +304,7 @@ $(document).ready( function() {
   email = localStorage.email;
   token = localStorage.token;
 
+  // load the underscore js templates
   quiz_list_template = _.template($('#quiz_list_template').html());
   quiz_template = _.template($('#quiz_info_template').html());
   question_template = _.template($('#question_template').html());
@@ -343,21 +317,15 @@ $(document).ready( function() {
     location.href = '#welcome-page';
   } else {
     // otherwise, check if the credentials are ok
-    getUserData(function(res, textstatus) {
+    getUserData().done(function(res, textstatus) {
       // if logged in ok, go to the homepage
-      if (res.success) {
         onLogin();
         if (location.hash in pages) {
           pages[location.hash]();
         } else {
           location.href = '#home-page';
         }
-      } else {
-        location.href = '#welcome-page';
-      }
-    },
-    // otherwise redirect to the welcome page
-    function(res, textstatus) {
+    }).fail(function(res, textstatus) {
       location.href = '#welcome-page';
     });
   }
@@ -378,5 +346,3 @@ $(document).ready( function() {
 
 });
 
-// TODO: use global_data.user.quizzes[id] to pre-fill questions in template
-// (saving previously entered answers)

@@ -37,6 +37,7 @@
 
 <script id="results_template" type="text/template" class="template">
 
+  <h2>Results</h2>
   <% var total = rc.results.correct_answers.length; var correct = 0; %>
   <% for (var i=0; i<rc.results.correct_answers.length; ++i) { %>
     <% var ans = ''; var ansIndex = rc.results.last_answers[i]-1; if (ansIndex == -1) { ans = "Don't know..."; } else { ans = rc.quiz.questions[i].options[ansIndex]; } %>
