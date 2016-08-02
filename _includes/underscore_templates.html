@@ -1,6 +1,6 @@
 <script id="quiz_list_template" type="text/template" class="template">
   <% _.each( rc.quizzes, function( quiz ){ %>
-    <a class="quiz-item" href="#" onclick="showQuiz(<%- quiz.id %>);"><%- quiz.name %></a>
+    <a class="ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="showQuiz(<%- quiz.id %>);"><%- quiz.name %></a>
   <% }); %>
 </script>
 
@@ -11,7 +11,7 @@
 
   <p>Number of questions: <%- rc.questions.length %></p>
 
-  <a href="#" onclick="takeQuiz(<%- rc.id %>);">Take the Quiz!</a>
+  <a class="ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="takeQuiz(<%- rc.id %>);">Start!</a>
 </script>
 
 <script id="question_template" type="text/template" class="template">
@@ -21,14 +21,16 @@
   <p><%- rc.q.q %></p>
 
   <form id="quiz-option-form" name="quiz-option-form">
-  <label><input type="radio" name="quiz-option" value="0" <% if ((rc.saved_answers && rc.saved_answers[rc.current-1] == 0) || !rc.saved_answers) { %>checked<% } %> /> Don't know... </label>
+    <input type="radio" name="quiz-option" id="answer-0" value="0" <% if ((rc.saved_answers && rc.saved_answers[rc.current-1] == 0) || !rc.saved_answers) { %>checked<% } %> />
+    <label class="radio-label" for="answer-0"> Don't know... </label>
   <% var count=1; _.each( rc.q.options, function( option ){ %>
-    <label><input type="radio" name="quiz-option" value="<%- count %>" <% if (rc.saved_answers && rc.saved_answers[rc.current-1] == count) { %>checked<% } %> /> <%- option %> </label>
+    <input type="radio" name="quiz-option" id="answer-<%- count %>" value="<%- count %>" <% if (rc.saved_answers && rc.saved_answers[rc.current-1] == count) { %>checked<% } %> />
+    <label class="radio-label" for="answer-<%- count %>"> <%- option %> </label>
   <% ++count; }); %>
   </form>
 
 
-  <a href="#" onclick="submitQuestion(<%- rc.id %>);">Submit</a>
+  <a class="ui-btn ui-icon-arrow-r ui-btn-icon-right ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="submitQuestion(<%- rc.id %>);">Submit Answer</a>
 </script>
 
 <script id="results_template" type="text/template" class="template">

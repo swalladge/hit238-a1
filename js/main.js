@@ -249,6 +249,11 @@ function onLogin() {
     global_data.quizzes = res.data;
     getUserData().done(function(res, textstatus) {
       global_data.user = res.data;
+      if (location.hash in pages) {
+        pages[location.hash]();
+      } else {
+        location.href = "#home-page";
+      }
     });
   });
 }
@@ -259,22 +264,18 @@ function onSplashPage() {
 
 function onWelcomePage() {
   console.log('onWelcomePage');
-
 }
 
 function onLoginPage() {
   console.log('onLoginPage');
-
 }
 
 function onRegisterPage() {
   console.log('onRegisterPage');
-
 }
 
 function onHomePage() {
   console.log('onHomePage');
-
 }
 
 function onProfilePage() {
@@ -287,6 +288,11 @@ function onProfilePage() {
 
 function onQuizzesPage() {
   console.log('onQuizzesPage');
+  if (!global_data.quizzes) {
+    location.href = "#home-page";
+    return;
+  }
+
   $('#quiz-index').html((quiz_list_template(global_data)));
 }
 
@@ -306,6 +312,7 @@ function onQuizPage() {
 function onQuestionPage() {
   console.log('onQuestionPage');
   if (current_question == null || current_quiz == null) {
+    location.href = "#home-page";
     return;
   }
   var data = {
@@ -346,13 +353,7 @@ $(document).ready( function() {
   } else {
     // otherwise, check if the credentials are ok
     getUserData().done(function(res, textstatus) {
-      // if logged in ok, go to the homepage
-        onLogin();
-        if (location.hash in pages) {
-          pages[location.hash]();
-        } else {
-          location.href = '#home-page';
-        }
+      onLogin();
     }).fail(function(res, textstatus) {
       location.href = '#welcome-page';
     });
