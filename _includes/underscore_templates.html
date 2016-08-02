@@ -1,6 +1,6 @@
 <script id="quiz_list_template" type="text/template" class="template">
   <% _.each( rc.quizzes, function( quiz ){ %>
-    <a class="ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="showQuiz(<%- quiz.id %>);"><%- quiz.name %></a>
+    <a class="ui-icon-bars ui-btn-icon-left ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="showQuiz(<%- quiz.id %>);"><%- quiz.name %></a>
   <% }); %>
 </script>
 
@@ -11,7 +11,7 @@
 
   <p>Number of questions: <%- rc.questions.length %></p>
 
-  <a class="ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="takeQuiz(<%- rc.id %>);">Start!</a>
+  <a class="ui-icon-arrow-r ui-btn-icon-right ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="takeQuiz(<%- rc.id %>);">Start!</a>
 </script>
 
 <script id="question_template" type="text/template" class="template">
@@ -29,8 +29,8 @@
   <% ++count; }); %>
   </form>
 
-
   <a class="ui-btn ui-icon-arrow-r ui-btn-icon-right ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="submitQuestion(<%- rc.id %>);">Submit Answer</a>
+  <!-- TODO: create back button feature -->
 </script>
 
 <script id="results_template" type="text/template" class="template">
