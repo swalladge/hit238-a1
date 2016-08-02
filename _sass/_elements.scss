@@ -4,7 +4,7 @@
 }
 
 input[type="radio"] {
-    display: none; 
+    display: none;
 }
 
 label {
@@ -13,7 +13,16 @@ label {
     padding: 0.5rem 1rem;
 }
 
-input[type="radio"]:checked + label { 
+input[type="radio"]:checked + label {
     background-color: #A0A0A0;
     box-shadow: inset 0px 0px 6px 0px #000000;
+}
+
+a.hide-link,a.hide-link:hover,a.hide-link:visited {
+  color: inherit;
+}
+
+// override some jquery mobile css
+.ui-dialog {
+  background-color: #ffcc33 !important;
 }
