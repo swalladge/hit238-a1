@@ -244,7 +244,6 @@ function onLogin() {
     e.preventDefault();
     logout();
   });
-  $('#logout-btn').text('Logout');
 
   getQuizIndex().done(function(res, textstatus) {
     global_data.quizzes = res.data;
