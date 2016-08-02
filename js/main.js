@@ -68,13 +68,12 @@ function redrawUserInfo() {
 }
 
 function onFailedLogin(text) {
-  $('#form-feedback').text('Login failed: ' + text);
+  $('#login-feedback').text('Login failed: ' + text);
 }
 
 function logout() {
   localStorage.clear();
   location.href = '#welcome-page';
-  $('#logout').text('Login');
 }
 
 // the login function - attempts login and gives feedback on errors
@@ -86,28 +85,58 @@ function login(tempemail, password) {
         method: 'POST',
         data: JSON.stringify({'email':tempemail, 'password':password}),
         success: function(res, textstatus) {
-          if (res.success) {
-            // redirect to main page
-            location.href = '#home-page';
+          // redirect to main page
+          location.href = '#home-page';
 
-            // clear the feedback element
-            $('#form-feedback').text('');
+          // save the credentials to localstorage for later
+          localStorage.token = token = res.data;
+          localStorage.email = email = tempemail;
 
-            // save the credentials to localstorage for later
-            localStorage.token = token = res.data;
-            localStorage.email = email = tempemail;
-
-            onLogin();
-          } else {
-            // failed :(
-            onFailedLogin(res.statusText);
-          }
+          onLogin();
         },
         error: function(res, textstatus) {
-          onFailedLogin(res.statusText);
+          $('#login-feedback').text('Reason: ' + res.statusText);
+          $.mobile.changePage('#login-fail-dialog', {
+            transition: 'pop',
+            changeHash: false,
+            role: 'dialog'
+          });
         }
   });
 }
+
+function postRegister(tempemail, username, password) {
+  return $.ajax(register_endpoint, {
+        jsonp: false,
+        dataType: 'json',
+        method: 'POST',
+        data: JSON.stringify({'username': username, 'email':tempemail, 'password':password})
+  });
+}
+
+function register() {
+  var tempemail = $('#register-form input[name=email]').val();
+  var username = $('#register-form input[name=username]').val();
+  var password = $('#register-form input[name=password]').val();
+  console.log(username + tempemail + password);
+  postRegister(tempemail, username, password).done(function() {
+    $.mobile.changePage('#register-dialog', {
+      transition: 'pop',
+      changeHash: false,
+      role: 'dialog'
+    });
+
+  }).fail(function(res, textstatus) {
+    $('#register-feedback').text('Reason: ' + res.statusText);
+    $.mobile.changePage('#register-fail-dialog', {
+      transition: 'pop',
+      changeHash: false,
+      role: 'dialog'
+    });
+  });
+}
+
+
 
 // submits the answers to the quiz, server returns the correct answers for us to
 // show a results screen
@@ -336,6 +365,11 @@ $(document).ready( function() {
     var username = $('#email-input').val();
     var password = $('#password-input').val();
     login(username, password);
+  });
+
+  $('#register-form').on('submit', function(e) {
+    e.preventDefault();
+    register();
   });
 
   // add functions to call on load each page
