@@ -157,7 +157,7 @@ function submitAnswersToServer(quizid, the_answers) {
             // show results
             $('#quiz-results').html(results_template(data));
 						$.mobile.changePage('#results-dialog', {
-							transition: 'pop',
+							transition: 'slideup',
 							changeHash: false,
 							role: 'dialog'
 						});
@@ -195,13 +195,21 @@ function saveAnswersToServer(quizid, the_answers) {
 function showQuiz(id) {
   current_quiz = id;
   if (global_data.fullquizzes[id] !== undefined) {
-    location.href = '#quiz-page';
+    $.mobile.changePage('#quiz-page', {
+      transition: 'slide',
+      changeHash: true,
+      role: 'page'
+    });
   } else {
     getFullQuiz(id).done(function(res, textstatus) {
       global_data.fullquizzes[id] = res.data;
       global_data.fullquizzes[id].id = id;
       $('#quiz-info').html((quiz_template(global_data.fullquizzes[id])));
-      location.href = '#quiz-page';
+      $.mobile.changePage('#quiz-page', {
+        transition: 'slide',
+        changeHash: true,
+        role: 'page'
+      });
     });
   }
 }
@@ -220,7 +228,11 @@ function takeQuiz(id) {
     }
   });
 
-  location.href = "#question-page";
+  $.mobile.changePage('#question-page', {
+    transition: 'slide',
+    changeHash: true,
+    role: 'page'
+  });
 }
 
 function submitQuestion() {
@@ -231,7 +243,13 @@ function submitQuestion() {
   if (current_question < max) {
     saveAnswersToServer(current_quiz, answers);
     current_question++;
-    onQuestionPage();
+    
+    $.mobile.changePage('#question-page', {
+      transition: 'slide',
+      changeHash: true,
+      role: 'page',
+      allowSamePageTransition: true
+    });
   } else {
     submitAnswersToServer(current_quiz, answers);
   }
@@ -376,6 +394,9 @@ $(document).ready( function() {
   Object.keys(pages).forEach(function(key) {
     $(key).on('pagebeforeshow', pages[key]);
   });
+
+  $.mobile.defaultPageTransition = 'none';
+  $.mobile.defaultDialogTransition = 'none';
 
 
 });
