@@ -235,14 +235,21 @@ function takeQuiz(id) {
   });
 }
 
-function submitQuestion() {
+function submitAnswer(next) {
   var answer = $('#quiz-option-form [name=quiz-option]:checked').val();
+  // NOTE: current_question zero-indexed in code, but one-indexed in template
   answers[current_question] = answer;
 
   var max = global_data.fullquizzes[current_quiz].questions.length - 1;
-  if (current_question < max) {
+  if (current_question < max || (!next)) {
     saveAnswersToServer(current_quiz, answers);
-    current_question++;
+    if (next) {
+      current_question++;
+    } else {
+      if (current_question > 0) {
+        current_question--;
+      }
+    }
     
     $.mobile.changePage('#question-page', {
       transition: 'fade',

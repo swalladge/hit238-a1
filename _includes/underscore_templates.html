@@ -29,8 +29,11 @@
   <% ++count; }); %>
   </form>
 
-  <a class="ui-btn ui-icon-arrow-r ui-btn-icon-right ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="submitQuestion(<%- rc.id %>);">Submit Answer</a>
-  <!-- TODO: create back button feature -->
+
+  <a class="ui-btn ui-icon-arrow-r ui-btn-icon-right ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="submitAnswer(true);"><% if (rc.current < rc.max) { %>Next Answer<% } else { %>Submit Answers<% } %></a>
+  <% if (rc.current > 1) { %>
+    <a class="ui-btn ui-icon-arrow-l ui-btn-icon-left ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="submitAnswer(false);">Previous Answer</a>
+  <% } %>
 </script>
 
 <script id="results_template" type="text/template" class="template">
