@@ -7,7 +7,7 @@
 <script id="quiz_info_template" type="text/template" class="template">
   <h2><%- rc.name %></h2>
 
-  <p><%- rc.description %></p>
+  <p><%= rc.description %></p>
 
   <p>Number of questions: <%- rc.questions.length %></p>
 
@@ -18,14 +18,14 @@
 
   <h2>Question <%- rc.current %> of <%- rc.max %></h2>
 
-  <p><%- rc.q.q %></p>
+  <p><%= rc.q.q %></p>
 
   <form id="quiz-option-form" name="quiz-option-form">
     <input type="radio" name="quiz-option" id="answer-0" value="0" <% if ((rc.saved_answers && rc.saved_answers[rc.current-1] == 0) || !rc.saved_answers) { %>checked<% } %> />
     <label class="radio-label" for="answer-0"> Don't know... </label>
   <% var count=1; _.each( rc.q.options, function( option ){ %>
     <input type="radio" name="quiz-option" id="answer-<%- count %>" value="<%- count %>" <% if (rc.saved_answers && rc.saved_answers[rc.current-1] == count) { %>checked<% } %> />
-    <label class="radio-label" for="answer-<%- count %>"> <%- option %> </label>
+    <label class="radio-label" for="answer-<%- count %>"> <%= option %> </label>
   <% ++count; }); %>
   </form>
 
@@ -42,9 +42,9 @@
     <% var cor_ans = rc.quiz.questions[i].options[rc.results.correct_answers[i]-1]; var cor_ansIndex = rc.results.correct_answers[i]-1%>
     <div class="result">
     <h3>Q<%- i+1 %></h3>
-    <p><%- rc.quiz.questions[i].q %></p>
-    <p> Correct answer: <%- cor_ans %></p>
-    <p> You answered: <%- ans %></p>
+    <p><%= rc.quiz.questions[i].q %></p>
+    <p> Correct answer: <%= cor_ans %></p>
+    <p> You answered: <%= ans %></p>
     <% if (ansIndex == cor_ansIndex) { correct++; } %>
     </div>
   <% } %>

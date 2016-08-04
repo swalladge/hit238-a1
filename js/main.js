@@ -245,7 +245,7 @@ function submitQuestion() {
     current_question++;
     
     $.mobile.changePage('#question-page', {
-      transition: 'slide',
+      transition: 'fade',
       changeHash: true,
       role: 'page',
       allowSamePageTransition: true

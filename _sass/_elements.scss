@@ -3,23 +3,30 @@
   display: block;
 }
 
-input[type="radio"] {
+#quiz-option-form input[type="radio"] {
     display: none;
 }
 
-label {
-    display: inline-block;
-    background-color: #E0E0E0;
+#quiz-option-form label {
+    display: block;
+    background-color: #ffcc33;
     padding: 0.5rem 1rem;
+    color: #000000;
 }
 
-input[type="radio"]:checked + label {
-    background-color: #A0A0A0;
+#quiz-option-form input[type="radio"]:checked + label {
+    background-color: #f7931e;
     box-shadow: inset 0px 0px 6px 0px #000000;
 }
 
 a.hide-link,a.hide-link:hover,a.hide-link:visited {
   color: inherit;
+}
+
+#title {
+  color: #000000;
+  font-weight: bold;
+  font-size: 1.2rem;
 }
 
 // override some jquery mobile css
