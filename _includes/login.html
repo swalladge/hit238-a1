@@ -1,15 +1,18 @@
 <section class="ui-alt-icon" data-role="page" id="login-page">
-
-
   <div data-role="content">
+    <h1>
+      Login!
+    </h1>
     <p>
-    Login! (If you don't have an account, please <a href="#register-page">register</a>.)
+      If you don't have an account yet, please <a href="#register-page">register</a>.
     </p>
 
     <form id="login-form">
-      <input type="text" id="email-input" placeholder="username"/><br>
-      <input type="password" id="password-input" placeholder="password"/><br>
+      <label for="email-input">Username or email: </label>
+      <input type="text" id="email-input" placeholder="username..."/><br>
+      <label for="password-input">Password: </label>
+      <input type="password" id="password-input" placeholder="password..."/><br>
       <input type="submit" value="Login!"/>
     </form>
-
+  </div>
 </section>
