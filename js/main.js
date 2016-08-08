@@ -161,6 +161,10 @@ function submitAnswersToServer(quizid, the_answers) {
 							changeHash: false,
 							role: 'dialog'
 						});
+
+            // refresh the quizzes view
+            getUserData().done( redrawQuizzes );
+
         },
         error: function(res, textstatus) {
           console.log('failed to submit answers: ' + the_answers);
@@ -179,11 +183,18 @@ function saveAnswersToServer(quizid, the_answers) {
         method: 'POST',
         data: JSON.stringify({'complete':false, 'answers':the_answers }),
         success: function(res, textstatus) {
-          _.each(global_data.user.quizzes, function(q) {
-            if (q.id == quizid) {
-              q.last_answers = the_answers;
+          var done = false;
+          for (n in Object.keys(global_data.user.quizzes)) {
+            if (global_data.user.quizzes[n].id == quizid) {
+              global_data.user.quizzes[n].last_answers = the_answers;
+              done = true;
             }
-          });
+          }
+          if (!done) {
+            console.log('adding');
+            global_data.user.quizzes.push({'attempts': 0, 'id':quizid, 'last_answers':the_answers});
+          }
+
           console.log('saved answers');
         },
         error: function(res, textstatus) {
@@ -318,8 +329,7 @@ function onProfilePage() {
 
 function onQuizzesPage() {
   console.log('onQuizzesPage');
-  if (!global_data.quizzes) {
-    location.href = "#home-page";
+  if (!(global_data.quizzes && global_data.user)) {
     return;
   }
   redrawQuizzes();
@@ -327,9 +337,9 @@ function onQuizzesPage() {
 
 function onQuizPage() {
   console.log('onQuizPage');
-  // back to the homepage if no quiz to display
+  // back to the quiz list if no quiz to display
   if (current_quiz == null) {
-    location.href = "#home-page";
+    location.href = "#quizzes-page";
     return;
   }
 
@@ -341,7 +351,7 @@ function onQuizPage() {
 function onQuestionPage() {
   console.log('onQuestionPage');
   if (current_question == null || current_quiz == null) {
-    location.href = "#home-page";
+    location.href = "#quizzes-page";
     return;
   }
   var data = {

@@ -1,6 +1,18 @@
 <script id="quiz_list_template" type="text/template" class="template">
   <% _.each( _.filter(rc.quizzes, function(q) { return !rc.search_string || q.name.toLowerCase().indexOf(rc.search_string) > -1 || _.contains(q.tags, rc.search_string);}) , function( quiz ){ %>
-    <a class="ui-icon-bars ui-btn-icon-left ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="showQuiz(<%- quiz.id %>);"><%- quiz.name %></a>
+    <div class="quiz-entry">
+      <a class="ui-icon-bars ui-btn-icon-left ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="showQuiz(<%- quiz.id %>);">
+        <%- quiz.name %>
+        <% var userquiz = _.find(rc.user.quizzes, function(q){return q.id == quiz.id;}) %>
+        <% if (userquiz) { %>
+          <span class="results-display">(
+            <% if (userquiz.attempts == 0) { %> In progress - saved answers<% } else { %>
+              <span>Best score:&nbsp;<%- userquiz.best_score %>/<%- userquiz.last_answers.length %></span> &bull; <span>Attempts:&nbsp;<%- userquiz.attempts %></span>
+            <% } %>)
+          </span>
+        <% } %>
+      </a>
+    </div>
   <% }); %>
 </script>
 
@@ -66,7 +78,7 @@
         <a class="ui-icon-bars ui-btn-icon-left ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="showQuiz(<%- quiz.id %>);">
           <%- _.find(rc.quizzes, function(q){return q.id == quiz.id;}).name %>
           <span class="results-display">(
-            <% if (quiz.attempts == 0) { %> Incomplete <% } else { %>
+            <% if (quiz.attempts == 0) { %> In progress - saved answers <% } else { %>
            <span>Best score:&nbsp;<%- quiz.best_score %>/<%- quiz.last_answers.length %></span> &bull; <span>Attempts:&nbsp;<%- quiz.attempts %></span>
            <% } %>)
          </span>
