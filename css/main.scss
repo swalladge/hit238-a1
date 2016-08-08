@@ -71,3 +71,24 @@ a.hide-link,a.hide-link:hover,a.hide-link:visited {
 .ui-dialog {
   background-color: #ffcc33 !important;
 }
+
+#splash-image {
+  display: block;
+  margin: auto;
+}
+
+@media screen and (orientation: landscape) {
+
+  #splash-image {
+    width: auto;
+    height: 100vh;
+  }
+}
+
+@media screen and (orientation: portrait) {
+
+  #splash-image {
+    width: 100vw;
+    height: auto;
+  }
+}
