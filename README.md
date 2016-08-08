@@ -18,3 +18,4 @@ A webapp for assignment 1, HIT238. Copyright © 2016 Samuel Walladge
 
 - horizontally grouped buttons for some things
 - styling for better visual effects (especially for results page)
+- add more stats to user page (total number of attempts, questions answered, etc.)
