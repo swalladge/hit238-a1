@@ -283,6 +283,11 @@ function onLogin() {
   });
 }
 
+function redrawQuizzes() {
+  $('#quiz-index').html((quiz_list_template(global_data)));
+}
+
+
 function onSplashPage() {
   console.log('splashpage');
 }
@@ -317,8 +322,7 @@ function onQuizzesPage() {
     location.href = "#home-page";
     return;
   }
-
-  $('#quiz-index').html((quiz_list_template(global_data)));
+  redrawQuizzes();
 }
 
 function onQuizPage() {
@@ -355,6 +359,10 @@ function onQuestionPage() {
 
 }
 
+function search() {
+  global_data.search_string = $('#search-input').val().toLowerCase().trim();
+  redrawQuizzes();
+}
 
 
 // run on page load
@@ -401,6 +409,9 @@ $(document).ready( function() {
   Object.keys(pages).forEach(function(key) {
     $(key).on('pagebeforeshow', pages[key]);
   });
+
+  // instant search function
+  $('#search-input').on('keyup', search);
 
   $.mobile.defaultPageTransition = 'none';
   $.mobile.defaultDialogTransition = 'none';

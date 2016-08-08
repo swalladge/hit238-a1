@@ -1,5 +1,5 @@
 <script id="quiz_list_template" type="text/template" class="template">
-  <% _.each( rc.quizzes, function( quiz ){ %>
+  <% _.each( _.filter(rc.quizzes, function(q) { return !rc.search_string || q.name.toLowerCase().indexOf(rc.search_string) > -1 || _.contains(q.tags, rc.search_string);}) , function( quiz ){ %>
     <a class="ui-icon-bars ui-btn-icon-left ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="showQuiz(<%- quiz.id %>);"><%- quiz.name %></a>
   <% }); %>
 </script>
