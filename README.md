@@ -16,4 +16,5 @@ A webapp for assignment 1, HIT238. Copyright © 2016 Samuel Walladge
 
 ## TODO
 
-- neater detailed results page after submitting answers
+- horizontally grouped buttons for some things
+- styling for better visual effects (especially for results page)

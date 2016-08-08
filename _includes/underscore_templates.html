@@ -58,20 +58,31 @@
 
 <script id="results_template" type="text/template" class="template">
 
-  <h2>Results</h2>
   <% var total = rc.results.correct_answers.length; var correct = 0; %>
+  <% var sum = _.reduce(_.zip(rc.results.correct_answers,rc.results.last_answers), function(memo, num){ return memo + (num[0] == num[1]); }, 0); %>
+  <h2>Score: <%- sum %>/<%- total %></h2>
+  <div class="results-list">
   <% for (var i=0; i<rc.results.correct_answers.length; ++i) { %>
     <% var ans = ''; var ansIndex = rc.results.last_answers[i]-1; if (ansIndex == -1) { ans = "I don't know..."; } else { ans = rc.quiz.questions[i].options[ansIndex]; } %>
     <% var cor_ans = rc.quiz.questions[i].options[rc.results.correct_answers[i]-1]; var cor_ansIndex = rc.results.correct_answers[i]-1%>
     <div class="result">
     <h3>Q<%- i+1 %></h3>
     <p><%= rc.quiz.questions[i].q %></p>
-    <p> Correct answer: <%= cor_ans %></p>
-    <p> You answered: <%= ans %></p>
-    <% if (ansIndex == cor_ansIndex) { correct++; } %>
+    <% if (ansIndex == cor_ansIndex) { %>
+    <div class="correct-answer">
+      <p>Correct!</p>
+    </div>
+    <% } else { %>
+    <div class="wrong-answer">
+      <p> You answered: <%= ans %></p>
+    </div>
+    <div class="shouldbe-answer">
+      <p> Correct answer: <%= cor_ans %></p>
+    </div>
+    <% } %>
     </div>
   <% } %>
-  <p>Score: <%- correct %>/<%- total %></p>
+  </div>
 
 </script>
 

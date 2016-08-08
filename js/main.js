@@ -170,7 +170,8 @@ function submitAnswersToServer(quizid, the_answers) {
 						});
 
             // refresh the quizzes view
-            getUserData().done( function() {
+            getUserData().done( function(res, textstatus) {
+              global_data.user = res.data;
               redrawQuizzes();
               redrawQuiz();
             });
