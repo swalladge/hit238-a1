@@ -34,6 +34,14 @@ pages = {
   '#question-page': onQuestionPage
 };
 
+stay_pages = {
+  '#home-page': onHomePage,
+  '#profile-page': onProfilePage,
+  '#quizzes-page': onQuizzesPage,
+  '#quiz-page': onQuizPage,
+  '#question-page': onQuestionPage
+};
+
 // ajax calls for getting data
 function getUserData() {
   return $.ajax(user_endpoint, {
@@ -273,7 +281,7 @@ function onLogin() {
     global_data.quizzes = res.data;
     getUserData().done(function(res, textstatus) {
       global_data.user = res.data;
-      if (location.hash in pages) {
+      if (location.hash in stay_pages) {
         pages[location.hash]();
       } else {
         location.href = "#home-page";
