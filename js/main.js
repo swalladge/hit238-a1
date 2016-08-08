@@ -118,7 +118,6 @@ function register() {
   var tempemail = $('#register-form input[name=email]').val();
   var username = $('#register-form input[name=username]').val();
   var password = $('#register-form input[name=password]').val();
-  console.log(username + tempemail + password);
   postRegister(tempemail, username, password).done(function() {
     $.mobile.changePage('#register-dialog', {
       transition: 'pop',
@@ -163,7 +162,10 @@ function submitAnswersToServer(quizid, the_answers) {
 						});
 
             // refresh the quizzes view
-            getUserData().done( redrawQuizzes );
+            getUserData().done( function() {
+              redrawQuizzes();
+              redrawQuiz();
+            });
 
         },
         error: function(res, textstatus) {
@@ -191,7 +193,6 @@ function saveAnswersToServer(quizid, the_answers) {
             }
           }
           if (!done) {
-            console.log('adding');
             global_data.user.quizzes.push({'attempts': 0, 'id':quizid, 'last_answers':the_answers});
           }
 
@@ -205,31 +206,18 @@ function saveAnswersToServer(quizid, the_answers) {
 
 function showQuiz(id) {
   current_quiz = id;
-  if (global_data.fullquizzes[id] !== undefined) {
-    $.mobile.changePage('#quiz-page', {
-      transition: 'slide',
-      changeHash: true,
-      role: 'page'
-    });
-  } else {
-    getFullQuiz(id).done(function(res, textstatus) {
-      global_data.fullquizzes[id] = res.data;
-      global_data.fullquizzes[id].id = id;
-      $('#quiz-info').html((quiz_template(global_data.fullquizzes[id])));
-      $.mobile.changePage('#quiz-page', {
-        transition: 'slide',
-        changeHash: true,
-        role: 'page'
-      });
-    });
-  }
+  $.mobile.changePage('#quiz-page', {
+    transition: 'slide',
+    changeHash: true,
+    role: 'page'
+  });
 }
 
 function takeQuiz(id) {
   current_quiz = id;
   current_question = 0;
   answers = [];
-  for (var i=0; i<global_data.fullquizzes[id].questions.length; i++) {
+  for (var i=0; i<global_data.fullquizzes[current_quiz].questions.length; i++) {
     answers[i] = 0;
   }
   // load saved answers if available
@@ -298,6 +286,16 @@ function redrawQuizzes() {
   $('#quiz-index').html((quiz_list_template(global_data)));
 }
 
+function redrawQuiz() {
+  var data = {
+    'quiz': global_data.fullquizzes[current_quiz],
+    'userquiz': _.find(global_data.user.quizzes, function(q){return q.id == current_quiz;})
+  };
+
+
+  $('#quiz-info').html(quiz_template(data));
+}
+
 
 function onSplashPage() {
   console.log('splashpage');
@@ -342,9 +340,15 @@ function onQuizPage() {
     location.href = "#quizzes-page";
     return;
   }
-
-  // draw the quiz
-  $('#quiz-info').html((quiz_template(global_data.fullquizzes[current_quiz])));
+  if (global_data.fullquizzes[current_quiz] !== undefined) {
+    redrawQuiz();
+  } else {
+    getFullQuiz(current_quiz).done(function(res, textstatus) {
+      global_data.fullquizzes[current_quiz] = res.data;
+      global_data.fullquizzes[current_quiz].id = current_quiz;
+      redrawQuiz();
+    });
+  }
 
 }
 
