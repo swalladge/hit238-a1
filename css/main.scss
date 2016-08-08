@@ -75,6 +75,7 @@ a.hide-link,a.hide-link:hover,a.hide-link:visited {
 #splash-image {
   display: block;
   margin: auto;
+  padding: 2rem;
 }
 
 @media screen and (orientation: landscape) {
@@ -94,7 +95,8 @@ a.hide-link,a.hide-link:hover,a.hide-link:visited {
 }
 
 #banner-image {
-  height: 2em;
+  height: 3rem;
   display: block;
-  margin: 0.5em auto;
+  margin: 0 auto;
+  padding: 0.5rem;
 }
