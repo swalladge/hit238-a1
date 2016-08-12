@@ -21,7 +21,6 @@
   ],
   "dependencies": {
     "normalize-css": "^4.2.0",
-    "font-awesome": "^4.6.3",
     "underscore": "^1.8.3"
   }
 }
