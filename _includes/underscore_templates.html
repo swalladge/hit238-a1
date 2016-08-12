@@ -94,6 +94,16 @@
 
   <h2><%- rc.user.username %></h2>
 
+  <h3>Stats</h3>
+
+  <p>
+    Total number of quiz attempts: <%- _.reduce(rc.user.quizzes, function(memo, q){ return memo + q.attempts; }, 0) %>
+  </p>
+
+  <p>
+    Best score in a quiz: <%- _.reduce(rc.user.quizzes, function(memo, q){ return _.max([memo, q.best_score/q.last_answers.length]); }, 0) * 100 %>%
+  </p>
+
   <h3>My Quizzes</h3>
   <% if (rc.user.quizzes.length != 0) { %>
     <% _.each(_.sortBy(rc.user.quizzes, function(q){return q.timestamp;}), function ( quiz ) { %>

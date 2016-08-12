@@ -4,18 +4,14 @@
 A webapp for assignment 1, HIT238. Copyright © 2016 Samuel Walladge
 
 
-## Libraries Used
+## Libraries and Tech Used
 
-- jQuery Mobile
-- underscore.js
-- jQuery
-- jekyll 
-- sass
-- javascript
-- liquid templating
+- [Jekyll](http://jekyllrb.com/): static site generator
+- [Liquid](https://shopify.github.io/liquid/): for templates used in generating the web app
+- [Sass](http://sass-lang.com/): for fancy css things like variables
+- [jQuery](http://jquery.com/): for manipulating the DOM and other things.
+- [jQuery Mobile](http://jquerymobile.com/): the web framework used - simple and pretty
+- [Underscore.js](http://underscorejs.org/): for useful functions to operate on lists and other data
 
-## TODO
 
-- horizontally grouped buttons for some things
-- styling for better visual effects (especially for results page)
-- add more stats to user page (total number of attempts, questions answered, etc.)
+## Info
