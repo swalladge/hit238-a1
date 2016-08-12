@@ -36,22 +36,14 @@
   </div>
 </section>
 
-<section data-theme="b" data-role="dialog" id="register-fail-dialog">
+<section data-theme="b" data-role="dialog" id="ajax-fail-dialog">
   <div data-role="content">
-    <h1>Unable to Register</h1>
+    <h1 id="ajax-fail-title">Server Request Failed</h1>
 
-    <div id="register-feedback"></div>
+    <div id="ajax-fail-feedback"></div>
 
-    <a href="#register-page" data-role="button">Close</a>
-  </div>
-</section>
+    <p id="ajax-fail-internet"></p>
 
-<section data-theme="b" data-role="dialog" id="login-fail-dialog">
-  <div data-role="content">
-    <h1>Login Failed</h1>
-
-    <div id="login-feedback"></div>
-
-    <a href="#login-page" data-role="button">Close</a>
+    <a href="#" data-rel="back" data-role="button">Close</a>
   </div>
 </section>

@@ -42,6 +42,38 @@ stay_pages = {
   '#question-page': onQuestionPage
 };
 
+// display the ajax error dialog, with error message
+function showAjaxError(res, textstatus, error, title) {
+  var msg;
+
+  // check if it was an error generated from the server or the client
+  if (res && res.status >= 400) {
+    msg = res.status;
+    $('#ajax-fail-internet').html('');
+    if (title) { $('#ajax-fail-title').html(title);}
+    else       { $('#ajax-fail-title').html('Server Request Failed');}
+  } else {
+    $('#ajax-fail-title').html('Server Request Failed');
+    $('#ajax-fail-internet').html(
+      'Please check your internet connection. If your connection is ok and the problem persists, please contact the <a href="https://swalladge.id.au">webmaster</a>.'
+    );
+  }
+
+  // build up the rest of the message
+  msg = msg + ' ' + textstatus;
+  if (textstatus && error) {
+    msg = msg + ' (' + error + ')';
+  }
+  $('#ajax-fail-feedback').html(msg);
+
+  // open the message dialog
+  $.mobile.changePage('#ajax-fail-dialog', {
+    transition: 'pop',
+    changeHash: false,
+    role: 'dialog'
+  });
+}
+
 // ajax calls for getting data
 function getUserData() {
   return $.ajax(user_endpoint, {
@@ -49,6 +81,7 @@ function getUserData() {
         dataType: 'json',
         method: 'GET',
         data: {'email': email, 'token': token},
+        error: showAjaxError
   });
 }
 
@@ -57,6 +90,7 @@ function getQuizIndex() {
         jsonp: false,
         dataType: 'json',
         method: 'GET',
+        error: showAjaxError,
         data: {'email': email, 'token': token}
   });
 }
@@ -66,6 +100,7 @@ function getFullQuiz(id) {
         jsonp: false,
         dataType: 'json',
         method: 'GET',
+        error: showAjaxError,
         data: {'email': email, 'token': token}
   });
 }
@@ -102,13 +137,8 @@ function login(tempemail, password) {
 
           onLogin();
         },
-        error: function(res, textstatus) {
-          $('#login-feedback').text('Reason: ' + res.statusText);
-          $.mobile.changePage('#login-fail-dialog', {
-            transition: 'pop',
-            changeHash: false,
-            role: 'dialog'
-          });
+        error: function(res, textstatus, error) {
+          showAjaxError(res, textstatus, error, "Login Failed");
         }
   });
 }
@@ -133,13 +163,8 @@ function register() {
       role: 'dialog'
     });
 
-  }).fail(function(res, textstatus) {
-    $('#register-feedback').text('Reason: ' + res.statusText);
-    $.mobile.changePage('#register-fail-dialog', {
-      transition: 'pop',
-      changeHash: false,
-      role: 'dialog'
-    });
+  }).fail(function(res, textstatus, error) {
+    showAjaxError(res, textstatus, error, "Register Failed");
   });
 }
 
@@ -177,9 +202,9 @@ function submitAnswersToServer(quizid, the_answers) {
             });
 
         },
-        error: function(res, textstatus) {
-          console.log('failed to submit answers: ' + the_answers);
+        error: function(res, textstatus, error) {
           location.href = '#home-page';
+          showAjaxError(res, textstatus, error);
         }
   });
 }
@@ -211,8 +236,8 @@ function saveAnswersToServer(quizid, the_answers, callback) {
           }
           console.log('saved answers');
         },
-        error: function(res, textstatus) {
-          console.log('failed to save answers');
+        error: function(res, textstatus, error) {
+          showAjaxError(res, textstatus, error);
         }
   });
 }
@@ -430,8 +455,12 @@ $(document).ready( function() {
     // otherwise, check if the credentials are ok
     getUserData().done(function(res, textstatus) {
       onLogin();
-    }).fail(function(res, textstatus) {
-      location.href = '#welcome-page';
+    }).fail(function(res, textstatus, error) {
+      if (res.status == 401) {
+        location.href = '#welcome-page';
+      } else {
+        showAjaxError(res, textstatus, error);
+      }
     });
   }
 

@@ -3,7 +3,32 @@
 
 @charset "utf-8";
 
-@import url(https://fonts.googleapis.com/css?family=Roboto:400,700,400italic,700italic);
+// font declarations below from:
+//  https://fonts.googleapis.com/css?family=Roboto:400,700,400italic,700italic
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto'), local('Roboto-Regular'), url(https://fonts.gstatic.com/s/roboto/v15/zN7GBFwfMP4uA6AR0HCoLQ.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Roboto Bold'), local('Roboto-Bold'), url(https://fonts.gstatic.com/s/roboto/v15/d-6IYplOFocCacKzxwXSOKCWcynf_cDxXwCLxiixG1c.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Roboto Italic'), local('Roboto-Italic'), url(https://fonts.gstatic.com/s/roboto/v15/W4wDsBUluyw0tK3tykhXEfesZW2xOQ-xsNqO47m55DA.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Roboto Bold Italic'), local('Roboto-BoldItalic'), url(https://fonts.gstatic.com/s/roboto/v15/t6Nd4cfPRhZP44Q5QAjcC50EAVxt0G0biEntp43Qt6E.ttf) format('truetype');
+}
 
 
 // colour variables for consistency
@@ -25,13 +50,10 @@ html {
 html, body {
     font-family: Roboto, sans-serif;
     font-size: 100%;
-    -webkit-text-size-adjust: 100%;
-    -webkit-font-feature-settings: "kern" 1;
-    -moz-font-feature-settings: "kern" 1;
-    -o-font-feature-settings: "kern" 1;
-    font-feature-settings: "kern" 1;
-    font-kerning: normal;
 }
+
+
+// various mini styles and some overrides from jquery mobile
 
 .block {
   display: block;
@@ -73,7 +95,7 @@ a.hide-link,a.hide-link:hover,a.hide-link:visited {
   font-size: 1.2rem;
 }
 
-// override some jquery mobile css
+// override the background colour for dialogs
 .ui-dialog {
   background-color: $bright-background !important;
 }
@@ -85,7 +107,6 @@ a.hide-link,a.hide-link:hover,a.hide-link:visited {
 }
 
 @media screen and (orientation: landscape) {
-
   #splash-image {
     width: auto;
     height: 100vh;
@@ -93,7 +114,6 @@ a.hide-link,a.hide-link:hover,a.hide-link:visited {
 }
 
 @media screen and (orientation: portrait) {
-
   #splash-image {
     width: 100vw;
     height: auto;
