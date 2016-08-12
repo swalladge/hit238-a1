@@ -5,10 +5,10 @@
         <%- quiz.name %>
         <% var userquiz = _.find(rc.user.quizzes, function(q){return q.id == quiz.id;}) %>
         <% if (userquiz) { %>
-          <span class="results-display">(
-            <% if (userquiz.attempts == 0) { %> In progress - saved answers<% } else { %>
+          <span class="results-display">
+            <% if (userquiz.attempts == 0) { %> <em>In progress</em> <% } else { %>
               <span>Best score:&nbsp;<%- userquiz.best_score %>/<%- userquiz.last_answers.length %></span> &bull; <span>Attempts:&nbsp;<%- userquiz.attempts %></span>
-            <% } %>)
+            <% } %>
           </span>
         <% } %>
       </a>
@@ -24,11 +24,15 @@
   <p>Number of questions: <%- rc.quiz.questions.length %></p>
 
   <% if (rc.userquiz) { %>
-    <span class="results-display">(
-      <% if (rc.userquiz.attempts == 0) { %> In progress - saved answers<% } else { %>
+    <span class="results-display">
+      <% if (rc.userquiz.attempts == 0) { %> <em>In progress</em>
+      <% } else { %>
         <span>Best score:&nbsp;<%- rc.userquiz.best_score %>/<%- rc.userquiz.last_answers.length %></span> &bull; <span>Attempts:&nbsp;<%- rc.userquiz.attempts %></span>
-      <% } %>)
+      <% } %>
     </span>
+    <% if (_.some(rc.userquiz.last_answers, function(n){return n!=0;}) ){ %>
+      <a class="ui-icon-refresh ui-btn-icon-left ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="resetQuiz(<%- rc.quiz.id %>);">Reset Saved Answers</a>
+    <% } %>
   <% } %>
 
   <a class="ui-icon-arrow-r ui-btn-icon-right ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="takeQuiz(<%- rc.quiz.id %>);">Start!</a>
@@ -96,10 +100,10 @@
       <div class="profile-quiz-entry">
         <a class="ui-icon-bars ui-btn-icon-left ui-link ui-btn ui-shadow ui-corner-all" href="#" onclick="showQuiz(<%- quiz.id %>);">
           <%- _.find(rc.quizzes, function(q){return q.id == quiz.id;}).name %>
-          <span class="results-display">(
-            <% if (quiz.attempts == 0) { %> In progress - saved answers <% } else { %>
+          <span class="results-display">
+            <% if (quiz.attempts == 0) { %> <em>In progress</em> <% } else { %>
            <span>Best score:&nbsp;<%- quiz.best_score %>/<%- quiz.last_answers.length %></span> &bull; <span>Attempts:&nbsp;<%- quiz.attempts %></span>
-           <% } %>)
+           <% } %>
          </span>
         </a>
       </div>

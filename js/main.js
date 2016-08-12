@@ -186,7 +186,7 @@ function submitAnswersToServer(quizid, the_answers) {
 
 // saves the current answers to the server without submitting (allows for saving
 // progress in a quiz)
-function saveAnswersToServer(quizid, the_answers) {
+function saveAnswersToServer(quizid, the_answers, callback) {
   var params = {'email': email, 'token': token};
   $.ajax(quiz_endpoint + quizid + '?' + $.param(params), {
         jsonp: false,
@@ -205,6 +205,10 @@ function saveAnswersToServer(quizid, the_answers) {
             global_data.user.quizzes.push({'attempts': 0, 'id':quizid, 'last_answers':the_answers});
           }
 
+          // call the optional callback now it's finished
+          if (callback) {
+            callback();
+          }
           console.log('saved answers');
         },
         error: function(res, textstatus) {
@@ -241,6 +245,22 @@ function takeQuiz(id) {
     changeHash: true,
     role: 'page'
   });
+}
+
+
+// resets saved answers for the given quiz
+function resetQuiz(quizid) {
+
+  _.each(global_data.user.quizzes, function(q) {
+    if (q.id == quizid) {
+      for (var i=0; i<q.last_answers.length; i++) {
+        q.last_answers[i] = 0;
+      }
+      // save the reset answers, and redraw the quiz page when done
+      saveAnswersToServer(quizid, q.last_answers, redrawQuiz);
+    }
+  });
+
 }
 
 function submitAnswer(next) {
