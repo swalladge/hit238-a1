@@ -73,15 +73,18 @@
     <h3>Q<%- i+1 %></h3>
     <p><%= rc.quiz.questions[i].q %></p>
     <% if (ansIndex == cor_ansIndex) { %>
+    <div class="shouldbe-answer">
+      <p> Answer: <%= cor_ans %></p>
+    </div>
     <div class="correct-answer">
       <p>Correct!</p>
     </div>
     <% } else { %>
-    <div class="wrong-answer">
-      <p> You answered: <%= ans %></p>
-    </div>
     <div class="shouldbe-answer">
       <p> Correct answer: <%= cor_ans %></p>
+    </div>
+    <div class="wrong-answer">
+      <p> You answered: <%= ans %></p>
     </div>
     <% } %>
     </div>
