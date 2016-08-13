@@ -3,6 +3,9 @@
 
 A webapp for Assignment 1, HIT238. Copyright © 2016 Samuel Walladge
 
+## What is it?
+
+A web app targeted at small-screen devices, designed for general purpose, test-yourself, trivia/quiz taking.
 
 ## Info
 
@@ -22,6 +25,22 @@ In the web app itself, jQuery Mobile is used as the web framework, with a custom
 for ajax calls, data manipulation, DOM manipulation, and template rendering (for displaying data in the app).
 
 A live hosted version can be found at [https://quiz.swalladge.id.au](https://quiz.swalladge.id.au).
+
+
+## Features
+
+- Communicates via ajax with a server created specifically for this.
+- Loads quizzes from the server (allows for easily adding/modifying quizzes separately from the webapp code).
+- Multiple quizzes available to take; web app will support a potentially large number of quizzes, and any number of
+  questions per quiz.
+- Quizzes have multiple choice questions with a "don't know" option.
+- Able to take quizzes multiple times, with statistics kept on number of attempts and best score achieved.
+- User accounts (login, register)
+- View statistics such as total number of quizzes taken.
+- Quiz answers are saved (automatically and instantly) to your account for resuming quizzes later from any device.
+- Ability to reset saved answers.
+- Search bar to find a quiz quickly.
+- Interface designed for accessibility on small screens.
 
 
 ## Libraries and Tech Used
